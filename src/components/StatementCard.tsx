@@ -59,9 +59,9 @@ export default function StatementCard({
             </span>
           )}
         </div>
-        <button className="text-gold hover:text-black transition-colors font-medium">
+        <span className="text-gold hover:text-black transition-colors font-medium">
           Leer completa →
-        </button>
+        </span>
       </div>
     </article>
   );
