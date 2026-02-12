@@ -29,15 +29,11 @@ export default function Header() {
           </nav>
           
           <div className="flex items-center space-x-4">
-            <Link href="/login">
-              <button className="btn-secondary">
-                Iniciar Sesión
-              </button>
+            <Link href="/login" className="btn-secondary">
+              Iniciar Sesión
             </Link>
-            <Link href="/signup">
-              <button className="btn-primary">
-                Unirse ahora
-              </button>
+            <Link href="/signup" className="btn-primary">
+              Unirse ahora
             </Link>
           </div>
         </div>

@@ -103,7 +103,11 @@ export default function NewClarificationPage() {
               <p className="text-sm text-gray">
                 Documentos, imágenes, audio (máx. 25MB por archivo)
               </p>
-              <button className="btn-secondary mt-4 text-sm">
+              <button 
+                type="button"
+                onClick={() => alert('Funcionalidad de carga de archivos - próximamente')}
+                className="btn-secondary mt-4 text-sm"
+              >
                 Seleccionar archivos
               </button>
             </div>
@@ -147,10 +151,33 @@ export default function NewClarificationPage() {
             <Link href="/dashboard" className="btn-secondary text-center">
               Cancelar
             </Link>
-            <button className="btn-secondary">
+            <button 
+              type="button"
+              onClick={() => {
+                localStorage.setItem('clarifypro_draft', JSON.stringify({
+                  content,
+                  tone,
+                  category,
+                  rumorSource,
+                  createdAt: new Date().toISOString()
+                }));
+                alert('Borrador guardado correctamente');
+              }}
+              className="btn-secondary"
+            >
               Guardar borrador
             </button>
-            <button className="btn-primary">
+            <button 
+              type="button"
+              onClick={() => {
+                if (!content.trim()) {
+                  alert('Por favor, escribe tu aclaración oficial');
+                  return;
+                }
+                alert('Aclaración enviada a verificación. Recibirás notificación cuando sea aprobada.');
+              }}
+              className="btn-primary"
+            >
               Enviar a verificación
             </button>
           </div>
