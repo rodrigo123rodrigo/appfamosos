@@ -24,13 +24,13 @@ export default function StatementCard({
     <article className="statement-card p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gold rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-copper rounded-full flex items-center justify-center">
             <span className="text-white font-semibold">
               {celebrity.charAt(0)}
             </span>
           </div>
           <div>
-            <h3 className="font-semibold text-black text-lg">{celebrity}</h3>
+            <h3 className="font-semibold text-teal text-lg">{celebrity}</h3>
             <span className="text-sm text-gray bg-gray-light px-2 py-1 rounded-full">
               {category}
             </span>
@@ -44,7 +44,7 @@ export default function StatementCard({
         )}
       </div>
       
-      <h4 className="font-display text-xl font-semibold text-black mb-3">
+      <h4 className="font-display text-xl font-semibold text-teal mb-3">
         {title}
       </h4>
       
@@ -54,12 +54,12 @@ export default function StatementCard({
         <div className="flex items-center space-x-4">
           <span className="text-gray">{timestamp}</span>
           {evidenceCount > 0 && (
-            <span className="text-gold font-medium">
+            <span className="text-copper font-medium">
               📎 {evidenceCount} evidencia{evidenceCount > 1 ? 's' : ''}
             </span>
           )}
         </div>
-        <button className="text-gold hover:text-black transition-colors font-medium">
+        <button className="text-copper hover:text-teal transition-colors font-medium">
           Leer completa →
         </button>
       </div>

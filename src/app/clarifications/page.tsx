@@ -42,8 +42,8 @@ export default function ClarificationsPage() {
           >
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h3 className="font-semibold text-black">{item.title}</h3>
-                <p className="text-sm text-gray">{item.celebrity} · {item.category}</p>
+                <h3 className="font-semibold text-white">{item.title}</h3>
+                <p className="text-sm text-gray-light">{item.celebrity} · {item.category}</p>
               </div>
               <span className="verification-badge">Verificado</span>
             </div>

@@ -12,8 +12,8 @@ export default function LoginPage() {
       <div className="space-y-3 text-gray">
         <p>Usa tu correo corporativo o passkey para un acceso seguro.</p>
         <div className="statement-card p-4">
-          <p className="text-black font-semibold">Acceso rapido</p>
-          <p className="text-sm text-gray">Simulacion de login para demo.</p>
+          <p className="text-white font-semibold">Acceso rapido</p>
+          <p className="text-sm text-gray-light">Simulacion de login para demo.</p>
           <Link href="/dashboard" className="btn-primary mt-3 inline-block">
             Continuar
           </Link>

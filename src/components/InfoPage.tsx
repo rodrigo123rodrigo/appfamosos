@@ -23,10 +23,10 @@ export default function InfoPage({
   children,
 }: InfoPageProps) {
   return (
-    <div className="min-h-screen bg-ivory">
+    <div className="min-h-screen bg-transparent">
       <Header />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="font-display text-4xl md:text-5xl font-semibold text-black">
+        <h1 className="font-display text-4xl md:text-5xl font-semibold text-white">
           {title}
         </h1>
         <p className="mt-4 text-lg text-gray">{description}</p>
@@ -53,7 +53,7 @@ export default function InfoPage({
         )}
 
         <div className="mt-8">
-          <Link href="/" className="text-gold hover:text-black transition-colors">
+          <Link href="/" className="text-purple-neon hover:text-white transition-colors">
             ← Volver al inicio
           </Link>
         </div>

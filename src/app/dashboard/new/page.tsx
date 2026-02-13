@@ -31,19 +31,19 @@ export default function NewClarificationPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-ivory">
+    <div className="min-h-screen bg-transparent">
       <Header />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="font-display text-4xl font-semibold text-black mb-2">
+          <h1 className="font-display text-4xl font-semibold text-white mb-2">
             Nueva Aclaración
           </h1>
-          <p className="text-gray text-lg">
+          <p className="text-gray-light text-lg">
             Editor guiado: rumor, aclaración, evidencia y categoría.
           </p>
           {draft && (
-            <p className="text-sm text-gold mt-2">
+            <p className="text-sm text-purple-neon mt-2">
               ✨ Borrador cargado por Voice Commander ({draft.createdAt.slice(0, 10)})
             </p>
           )}
@@ -52,7 +52,7 @@ export default function NewClarificationPage() {
         <div className="space-y-6">
           {/* Step 1: Rumor source */}
           <div className="statement-card p-6">
-            <h2 className="font-display text-xl font-semibold text-black mb-3">
+            <h2 className="font-display text-xl font-semibold text-white mb-3">
               1. ¿Qué se dijo?
             </h2>
             <input
@@ -60,13 +60,13 @@ export default function NewClarificationPage() {
               value={rumorSource}
               onChange={(e) => setRumorSource(e.target.value)}
               placeholder="Pega el enlace o escribe la cita del rumor"
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition bg-white text-black"
+              className="w-full px-4 py-3 rounded-lg border border-purple-neon/30 bg-purple-dark/50 text-white placeholder-gray-light focus:border-purple-neon focus:ring-2 focus:ring-purple-neon/20 outline-none transition"
             />
           </div>
 
           {/* Step 2: Clarification text */}
           <div className="statement-card p-6">
-            <h2 className="font-display text-xl font-semibold text-black mb-3">
+            <h2 className="font-display text-xl font-semibold text-white mb-3">
               2. Tu Aclaración Oficial
             </h2>
             <textarea
@@ -74,14 +74,14 @@ export default function NewClarificationPage() {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Escribe tu comunicado oficial aquí…"
               rows={6}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition bg-white text-black resize-y"
+              className="w-full px-4 py-3 rounded-lg border border-purple-neon/30 bg-purple-dark/50 text-white placeholder-gray-light focus:border-purple-neon focus:ring-2 focus:ring-purple-neon/20 outline-none transition resize-y"
             />
             <div className="mt-3 flex items-center gap-3">
-              <label className="text-sm text-gray">Tono:</label>
+              <label className="text-sm text-gray-light">Tono:</label>
               <select
                 value={tone}
                 onChange={(e) => setTone(e.target.value)}
-                className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-black text-sm focus:border-gold outline-none"
+                className="px-3 py-2 rounded-lg border border-purple-neon/30 bg-purple-dark/50 text-white text-sm focus:border-purple-neon outline-none"
               >
                 <option value="profesional">Profesional</option>
                 <option value="defensivo">Defensivo</option>
@@ -93,14 +93,14 @@ export default function NewClarificationPage() {
 
           {/* Step 3: Evidence */}
           <div className="statement-card p-6">
-            <h2 className="font-display text-xl font-semibold text-black mb-3">
+            <h2 className="font-display text-xl font-semibold text-white mb-3">
               3. Evidencia Adjunta
             </h2>
-            <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center">
-              <p className="text-gray mb-2">
+            <div className="border-2 border-dashed border-purple-neon/30 rounded-lg p-8 text-center">
+              <p className="text-gray-light mb-2">
                 Arrastra archivos aquí o haz clic para seleccionar
               </p>
-              <p className="text-sm text-gray">
+              <p className="text-sm text-gray-light">
                 Documentos, imágenes, audio (máx. 25MB por archivo)
               </p>
               <button className="btn-secondary mt-4 text-sm">
@@ -111,16 +111,16 @@ export default function NewClarificationPage() {
 
           {/* Step 4: Category & embargo */}
           <div className="statement-card p-6">
-            <h2 className="font-display text-xl font-semibold text-black mb-3">
+            <h2 className="font-display text-xl font-semibold text-white mb-3">
               4. Categoría y Embargo
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-gray block mb-1">Categoría</label>
+                <label className="text-sm text-gray-light block mb-1">Categoría</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-black text-sm focus:border-gold outline-none"
+                  className="w-full px-3 py-2 rounded-lg border border-purple-neon/30 bg-purple-dark/50 text-white text-sm focus:border-purple-neon outline-none"
                 >
                   <option>Relaciones</option>
                   <option>Proyectos</option>
@@ -133,10 +133,10 @@ export default function NewClarificationPage() {
                 </select>
               </div>
               <div>
-                <label className="text-sm text-gray block mb-1">Embargo (opcional)</label>
+                <label className="text-sm text-gray-light block mb-1">Embargo (opcional)</label>
                 <input
                   type="datetime-local"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-black text-sm focus:border-gold outline-none"
+                  className="w-full px-3 py-2 rounded-lg border border-purple-neon/30 bg-purple-dark/50 text-white text-sm focus:border-purple-neon outline-none"
                 />
               </div>
             </div>

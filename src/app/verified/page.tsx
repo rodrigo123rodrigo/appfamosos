@@ -10,16 +10,16 @@ export default function VerifiedPage() {
     >
       <div className="space-y-3">
         <div className="statement-card p-4">
-          <h3 className="font-semibold text-black">Ana Garcia</h3>
-          <p className="text-gray text-sm">Verificacion activa · Nivel Pro</p>
+          <h3 className="font-semibold text-white">Ana Garcia</h3>
+          <p className="text-gray-light text-sm">Verificacion activa · Nivel Pro</p>
         </div>
         <div className="statement-card p-4">
-          <h3 className="font-semibold text-black">Carlos Ruiz</h3>
-          <p className="text-gray text-sm">Verificacion activa · Nivel Pro</p>
+          <h3 className="font-semibold text-white">Carlos Ruiz</h3>
+          <p className="text-gray-light text-sm">Verificacion activa · Nivel Pro</p>
         </div>
         <div className="statement-card p-4">
-          <h3 className="font-semibold text-black">Maria Lopez</h3>
-          <p className="text-gray text-sm">Verificacion activa · Nivel Pro</p>
+          <h3 className="font-semibold text-white">Maria Lopez</h3>
+          <p className="text-gray-light text-sm">Verificacion activa · Nivel Pro</p>
         </div>
       </div>
     </InfoPage>

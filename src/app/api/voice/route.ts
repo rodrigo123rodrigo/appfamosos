@@ -2,30 +2,72 @@ import { NextRequest, NextResponse } from "next/server";
 
 /* ── System prompt ──────────────────────────────────────────── */
 
-const SYSTEM_INSTRUCTION = `Eres el asistente operativo de una celebridad dentro de la plataforma ClarifyPro.
-Tu trabajo NO es conversar, es EJECUTAR.
+const SYSTEM_INSTRUCTION = `Eres el asistente de voz inteligente de ClarifyPro, la plataforma premium para celebridades y managers.
+Tu misión es EJECUTAR ACCIONES de forma fluida y natural, optimizando el tiempo de los usuarios.
 
-REGLAS:
-1. Si el usuario pide una acción, devuelve EXCLUSIVAMENTE un JSON con la estructura:
-   { "function": "<nombre>", "args": { ... } }
-2. Si te pide redactar un comunicado o borrador, usa createDraft con tono profesional y defensivo.
-3. Si te pide navegar, usa navigateTo con la ruta correcta.
-4. Si te pide leer algo en voz alta, usa readAloud.
-5. Si te pide activar/desactivar privacidad, usa togglePrivacy.
-6. Si la intención no es clara o es una pregunta informativa, responde con:
-   { "function": "reply", "args": { "text": "<tu respuesta breve>" } }
+IDENTIDAD DE LA MARCA:
+- Premium, moderna y exclusiva
+- Colores: Negro cyberpunk (#0D0D0D), Cyan neón (#00F0FF), Magenta (#FF006E), Púrpura (#7700FF)
+- Diseño futurista con efectos de glow neón
+- Para celebridades, managers y equipos profesionales
 
-HERRAMIENTAS DISPONIBLES:
-- navigateTo({ route: string })
-  Rutas: /, /dashboard, /clarifications, /categories, /verified, /media,
-         /login, /signup, /demo, /pricing, /dashboard/new, /dashboard/metrics,
-         /dashboard/press-kit, /dashboard/rumors, /dashboard/statements,
-         /help, /contact, /docs, /privacy, /terms, /security, /api
-- createDraft({ content: string, tone: "profesional"|"defensivo"|"neutral"|"urgente" })
-- readAloud({ text: string })
-- togglePrivacy({ enabled: boolean })
+FLUJO COMPLETO DE DICTADO (LO MÁS IMPORTANTE):
 
-NUNCA respondas fuera de formato JSON. NUNCA uses markdown. Solo JSON puro.`;
+1. INICIO: Cuando el usuario diga "nueva aclaración", "quiero hacer una aclaración", "declaración nueva", etc.
+   → { "function": "dictateStatement", "args": { "mode": "start" } }
+
+2. ESCUCHA: Después de iniciar, CADA frase del usuario es contenido:
+   → { "function": "dictateStatement", "args": { "mode": "append", "content": "<todo lo que dijo>" } }
+
+3. FINALIZAR: Cuando diga "terminar", "listo", "eso es todo", "publicar":
+   → { "function": "dictateStatement", "args": { "mode": "finish", "content": "<últimas palabras si las hay>" } }
+
+4. CONFIRMACIÓN: El sistema leerá el texto. Si confirma con "sí", "correcto", "publicar":
+   → { "function": "confirmAndPublish", "args": { "platforms": ["twitter", "instagram", "facebook"], "confirmed": true } }
+
+5. RECHAZO: Si dice "no", "incorrecto", "rehacer":
+   → { "function": "confirmAndPublish", "args": { "platforms": [], "confirmed": false } }
+
+NAVEGACIÓN:
+cuando el usuario pida ir a dashboard, nueva aclaración, métricas, etc.:
+- navigateTo({ route: "/dashboard" })
+- navigateTo({ route: "/dashboard/new" })
+- navigateTo({ route: "/dashboard/metrics" })
+etc.
+
+BORRADOR TRADICIONAL:
+Si pide "redactar un comunicado sobre X" (sin usar flujo de dictado):
+- createDraft({ content: "<generar texto profesional>", tone: "profesional" })
+
+OTRAS ACCIONES:
+- readAloud({ text: "..." }) para leer algo
+- togglePrivacy({ enabled: true/false }) para privacidad
+
+FORMATO DE RESPUESTA:
+SIEMPRE JSON puro, NUNCA markdown:
+{ "function": "<nombre>", "args": { ... } }
+
+Si la intención no es clara:
+{ "function": "reply", "args": { "text": "¿Qué necesitas hacer?" } }
+
+EJEMPLOS:
+
+Usuario: "Quiero hacer una nueva aclaración"
+→ { "function": "dictateStatement", "args": { "mode": "start" } }
+
+Usuario: "Hoy salió un rumor falso sobre mí y quiero aclarar que no es verdad"
+→ { "function": "dictateStatement", "args": { "mode": "append", "content": "Hoy salió un rumor falso sobre mí y quiero aclarar que no es verdad" } }
+
+Usuario: "Terminar"
+→ { "function": "dictateStatement", "args": { "mode": "finish" } }
+
+Usuario: "Sí, publicar en todo"
+→ { "function": "confirmAndPublish", "args": { "platforms": ["twitter", "instagram", "facebook"], "confirmed": true } }
+
+Usuario: "Llévame al dashboard"
+→ { "function": "navigateTo", "args": { "route": "/dashboard" } }
+
+NUNCA uses markdown, NUNCA agregues explicaciones fuera del JSON. SOLO JSON.`;
 
 /* ── POST handler ───────────────────────────────────────────── */
 
@@ -111,6 +153,67 @@ function localIntentParser(transcript: string): {
 } {
   const t = transcript.toLowerCase().trim();
 
+  /* Dictation flow - START */
+  if (
+    t.includes("nueva aclaración") ||
+    t.includes("nueva aclaracion") ||
+    t.includes("hacer una aclaración") ||
+    t.includes("hacer una aclaracion") ||
+    t.includes("quiero aclarar") ||
+    t.includes("declaración nueva") ||
+    t.includes("declaracion nueva") ||
+    t.includes("nuevo comunicado")
+  ) {
+    return { function: "dictateStatement", args: { mode: "start" } };
+  }
+
+  /* Dictation flow - FINISH */
+  if (
+    t === "terminar" ||
+    t === "listo" ||
+    t === "eso es todo" ||
+    t === "ya está" ||
+    t === "ya esta" ||
+    t.includes("finalizar dictado")
+  ) {
+    return { function: "dictateStatement", args: { mode: "finish" } };
+  }
+
+  /* Confirmation - PUBLISH */
+  if (
+    (t.includes("sí") || t.includes("si") || t.includes("correcto") || t.includes("publicar")) &&
+    (t.includes("publicar") || t.includes("confirmar") || t.length < 15)
+  ) {
+    const platforms = [];
+    if (t.includes("twitter")) platforms.push("twitter");
+    if (t.includes("instagram")) platforms.push("instagram");
+    if (t.includes("facebook")) platforms.push("facebook");
+    if (t.includes("linkedin")) platforms.push("linkedin");
+    
+    // Si no especifica, publicar en todas
+    if (platforms.length === 0) {
+      platforms.push("twitter", "instagram", "facebook");
+    }
+
+    return { 
+      function: "confirmAndPublish", 
+      args: { platforms, confirmed: true } 
+    };
+  }
+
+  /* Confirmation - REJECT */
+  if (
+    t.includes("no") && (t.includes("incorrecto") || t.includes("mal") || t.includes("rehacer") || t.includes("otra vez")) ||
+    t === "no" ||
+    t.includes("cancelar") ||
+    t.includes("descartar")
+  ) {
+    return { 
+      function: "confirmAndPublish", 
+      args: { platforms: [], confirmed: false } 
+    };
+  }
+
   /* Navigation intents */
   const navMap: Record<string, string> = {
     inicio: "/",
@@ -134,9 +237,7 @@ function localIntentParser(transcript: string): {
     demo: "/demo",
     precios: "/pricing",
     planes: "/pricing",
-    "nueva aclaración": "/dashboard/new",
-    "nueva aclaracion": "/dashboard/new",
-    "nuevo borrador": "/dashboard/new",
+    "editor": "/dashboard/new",
     métricas: "/dashboard/metrics",
     metricas: "/dashboard/metrics",
     "kit de prensa": "/dashboard/press-kit",
@@ -171,18 +272,19 @@ function localIntentParser(transcript: string): {
     return {
       function: "readAloud",
       args: {
-        text: "Esta es una prueba del sistema de lectura en voz alta de ClarifyPro.",
+        text: "Sistema de lectura en voz alta de ClarifyPro activado.",
       },
     };
   }
 
-  /* Draft / redactar intent */
+  /* Draft / redactar intent (traditional way, not dictation) */
   if (
-    t.includes("redact") ||
+    (t.includes("redact") ||
     t.includes("escrib") ||
     t.includes("borrador") ||
-    t.includes("comunicado") ||
-    t.includes("aclar")
+    t.includes("comunicado")) &&
+    !t.includes("nueva") &&
+    !t.includes("quiero")
   ) {
     return {
       function: "createDraft",
@@ -193,11 +295,21 @@ function localIntentParser(transcript: string): {
     };
   }
 
+  /* IF IN DICTATION MODE - treat everything as append */
+  // This will be handled by checking localStorage in the client
+  // But for safety, if nothing else matches and it's a long sentence, append it
+  if (t.length > 20 && !t.includes("?")) {
+    return {
+      function: "dictateStatement",
+      args: { mode: "append", content: transcript },
+    };
+  }
+
   /* Fallback reply */
   return {
     function: "reply",
     args: {
-      text: `Entendido: "${transcript}". ¿Quieres que navegue a alguna sección o redacte un comunicado?`,
+      text: `Escuché: "${transcript}". Di "nueva aclaración" para dictar, o "dashboard" para navegar.`,
     },
   };
 }

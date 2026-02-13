@@ -56,6 +56,46 @@ export const toolDefinitions = [
     },
   },
   {
+    name: "dictateStatement",
+    description:
+      "Inicia el proceso de dictado de una nueva aclaración. El usuario dictará el contenido y el sistema lo escribirá.",
+    parameters: {
+      type: "object",
+      properties: {
+        mode: {
+          type: "string",
+          enum: ["start", "append", "finish"],
+          description: "Modo: start (iniciar nuevo), append (agregar más), finish (terminar y confirmar)",
+        },
+        content: {
+          type: "string",
+          description: "Contenido dictado por el usuario (cuando mode es append o finish)",
+        },
+      },
+      required: ["mode"],
+    },
+  },
+  {
+    name: "confirmAndPublish",
+    description:
+      "Confirma el contenido dictado y lo publica en las redes sociales conectadas.",
+    parameters: {
+      type: "object",
+      properties: {
+        platforms: {
+          type: "array",
+          items: { type: "string" },
+          description: "Plataformas donde publicar: twitter, instagram, facebook, linkedin",
+        },
+        confirmed: {
+          type: "boolean",
+          description: "Si el usuario confirmó que el contenido es correcto",
+        },
+      },
+      required: ["platforms", "confirmed"],
+    },
+  },
+  {
     name: "readAloud",
     description:
       "Lee en voz alta un texto usando TTS (Text-to-Speech) del navegador.",
@@ -194,6 +234,112 @@ export default function useGeminiActions() {
     };
   }, []);
 
+  /* 5. dictateStatement ───────────────────────────────────── */
+  const dictateStatement = useCallback((mode: string, content?: string): ActionResult => {
+    const currentDraft = localStorage.getItem("clarifypro_dictation");
+    
+    if (mode === "start") {
+      localStorage.setItem("clarifypro_dictation", JSON.stringify({
+        content: "",
+        startedAt: new Date().toISOString(),
+        mode: "dictating"
+      }));
+      return {
+        ok: true,
+        action: "dictateStatement",
+        message: "Perfecto, estoy escuchando. Dicta tu aclaración.",
+      };
+    }
+
+    if (mode === "append" && content) {
+      const draft = currentDraft ? JSON.parse(currentDraft) : { content: "" };
+      draft.content += (draft.content ? " " : "") + content;
+      localStorage.setItem("clarifypro_dictation", JSON.stringify(draft));
+      return {
+        ok: true,
+        action: "dictateStatement",
+        message: "Agregado. Continúa dictando o di 'terminar' cuando acabes.",
+      };
+    }
+
+    if (mode === "finish") {
+      const draft = currentDraft ? JSON.parse(currentDraft) : { content: "" };
+      const finalContent = content ? draft.content + " " + content : draft.content;
+      
+      localStorage.setItem("clarifypro_final_draft", JSON.stringify({
+        content: finalContent,
+        createdAt: new Date().toISOString(),
+        tone: "profesional"
+      }));
+      localStorage.removeItem("clarifypro_dictation");
+      
+      // Disparar evento para que VoiceCommander lea el contenido
+      window.dispatchEvent(
+        new CustomEvent("clarifypro:readback", { detail: { content: finalContent } }),
+      );
+      
+      return {
+        ok: true,
+        action: "dictateStatement",
+        message: `He escrito: "${finalContent}". ¿Es correcto? Di "publicar" para confirmar o "rehacer" para empezar de nuevo.`,
+      };
+    }
+
+    return {
+      ok: false,
+      action: "dictateStatement",
+      message: "Modo no válido para dictateStatement",
+    };
+  }, []);
+
+  /* 6. confirmAndPublish ──────────────────────────────────── */
+  const confirmAndPublish = useCallback(async (platforms: string[], confirmed: boolean): Promise<ActionResult> => {
+    if (!confirmed) {
+      localStorage.removeItem("clarifypro_final_draft");
+      return {
+        ok: true,
+        action: "confirmAndPublish",
+        message: "Borrador descartado. Di 'nueva aclaración' para empezar de nuevo.",
+      };
+    }
+
+    const draftData = localStorage.getItem("clarifypro_final_draft");
+    if (!draftData) {
+      return {
+        ok: false,
+        action: "confirmAndPublish",
+        message: "No hay borrador para publicar.",
+      };
+    }
+
+    const draft = JSON.parse(draftData);
+    
+    // Guardar para publicación
+    localStorage.setItem("clarifypro_publish_queue", JSON.stringify({
+      content: draft.content,
+      platforms: platforms.length > 0 ? platforms : ["twitter", "instagram"],
+      scheduledAt: new Date().toISOString()
+    }));
+
+    // Disparar evento de publicación
+    window.dispatchEvent(
+      new CustomEvent("clarifypro:publish", { 
+        detail: { 
+          content: draft.content, 
+          platforms: platforms.length > 0 ? platforms : ["twitter", "instagram"]
+        } 
+      }),
+    );
+
+    localStorage.removeItem("clarifypro_final_draft");
+    
+    return {
+      ok: true,
+      action: "confirmAndPublish",
+      message: `¡Perfecto! Publicando en ${platforms.join(", ")}. Tu aclaración se está compartiendo ahora.`,
+    };
+  }, []);
+
   /* ── Action map for the dispatcher ──────────────────────── */
   const actions: ActionMap = useMemo(
     () => ({
@@ -203,8 +349,12 @@ export default function useGeminiActions() {
       readAloud: (args: { text: string }) => readAloud(args.text),
       togglePrivacy: (args: { enabled: boolean }) =>
         togglePrivacy(args.enabled),
+      dictateStatement: (args: { mode: string; content?: string }) =>
+        dictateStatement(args.mode, args.content),
+      confirmAndPublish: (args: { platforms: string[]; confirmed: boolean }) =>
+        confirmAndPublish(args.platforms, args.confirmed),
     }),
-    [navigateTo, createDraft, readAloud, togglePrivacy],
+    [navigateTo, createDraft, readAloud, togglePrivacy, dictateStatement, confirmAndPublish],
   );
 
   /** Dispatch a Gemini function-call result */

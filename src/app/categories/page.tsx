@@ -26,7 +26,7 @@ export default function CategoriesPage() {
             href={`/clarifications?category=${encodeURIComponent(category)}`}
             className="statement-card p-4 block text-center"
           >
-            <span className="font-display text-lg text-black">{category}</span>
+            <span className="font-display text-lg text-white">{category}</span>
           </Link>
         ))}
       </div>

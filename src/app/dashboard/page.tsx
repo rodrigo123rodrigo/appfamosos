@@ -32,15 +32,15 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-ivory">
+    <div className="min-h-screen bg-transparent">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="font-display text-4xl font-semibold text-black mb-2">
+          <h1 className="font-display text-4xl font-semibold text-white mb-2">
             Dashboard
           </h1>
-          <p className="text-gray text-lg">
+          <p className="text-gray-light text-lg">
             Gestiona tus aclaraciones y monitorea rumores
           </p>
         </div>
@@ -49,7 +49,7 @@ export default function Dashboard() {
           {/* Quick Actions */}
           <div className="lg:col-span-1">
             <div className="statement-card p-6">
-              <h2 className="font-display text-xl font-semibold text-black mb-4">
+              <h2 className="font-display text-xl font-semibold text-white mb-4">
                 Acciones Rápidas
               </h2>
               <div className="space-y-3">
@@ -67,19 +67,19 @@ export default function Dashboard() {
             
             {/* Profile Status */}
             <div className="statement-card p-6 mt-6">
-              <h3 className="font-semibold text-black mb-3">Estado del Perfil</h3>
+              <h3 className="font-semibold text-white mb-3">Estado del Perfil</h3>
               <div className="flex items-center space-x-2 mb-2">
                 <span className="verification-badge text-xs">Verificado</span>
-                <span className="text-sm text-gray">Nivel Pro</span>
+                <span className="text-sm text-gray-light">Nivel Pro</span>
               </div>
               <div className="text-sm space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-gray">Aclaraciones publicadas:</span>
-                  <span className="font-semibold">12</span>
+                  <span className="text-gray-light">Aclaraciones publicadas:</span>
+                  <span className="font-semibold text-white">12</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray">Vistas totales:</span>
-                  <span className="font-semibold">156,890</span>
+                  <span className="text-gray-light">Vistas totales:</span>
+                  <span className="font-semibold text-white">2.5M</span>
                 </div>
               </div>
             </div>
